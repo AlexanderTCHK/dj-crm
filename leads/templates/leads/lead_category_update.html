@@ -16,11 +16,6 @@
           >
           <a
             href="{% url 'leads:lead-category-update' lead.pk %}"
-            class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1"
-            >Category</a
-          >
-          <a
-            href="{% url 'leads:lead-update' lead.pk %}"
             class="
               flex-grow
               text-indigo-500
@@ -29,11 +24,16 @@
               text-lg
               px-1
             "
+            >Category</a
+          >
+          <a
+            href="{% url 'leads:lead-update' lead.pk %}"
+            class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1"
             >Update Details</a
           >
         </div>
         <form method="POST" action="">
-          {% csrf_token %} {{ form|crispy }}
+          {% csrf_token %} {{ form|crispy}}
           <button
             class="
               w-full
@@ -49,24 +49,6 @@
             Submit
           </button>
         </form>
-        <div class="mt-5 py-5 border-t border-gray-200">
-          <a
-            href="{% url 'leads:lead-delete' lead.pk %}"
-            class="
-              w-1/2
-              mt-3
-              text-white
-              bg-indigo-500
-              border-0
-              py-2
-              px-6
-              focus:outline-none
-              hover:bg-indigo-600
-              rounded
-            "
-            >Delete</a
-          >
-        </div>
       </div>
       <img
         alt="ecommerce"
