@@ -8,6 +8,7 @@ from .views import (LeadListView,
                     CategoryListView,
                     CategoryDetailView,
                     LeadCategoryUpdateView,
+                    
 )
 
 app_name = "leads"

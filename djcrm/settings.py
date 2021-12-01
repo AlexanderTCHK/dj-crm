@@ -63,7 +63,7 @@ ROOT_URLCONF = 'djcrm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/"templetes"],
+        'DIRS': [BASE_DIR/"templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,6 +144,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LOGIN_REDIRECT_URL = "/leads"
 LOGIN_URL = '/login'
+LOGOUT_REDIRECT_URL = '/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 

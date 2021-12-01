@@ -3,30 +3,38 @@
 
 <section class="text-gray-600 body-font">
   <div class="container px-5 py-24 mx-auto">
-    <div class="flex flex-col text-center w-full mb-20">
+    <div class="flex flex-col text-center w-full mb-10">
       <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Categories</h1>
-      <p class="lg:w-2/3 mx-auto leading-relaxed text-base">These categories segment the leads</p>
+      <p class="lg:w-1/2 mx-auto leading-relaxed text-base">These categories segment the leads</p>
     </div>
-    <div class="lg:w-2/3 w-full mx-auto overflow-auto">
-      <table class="table-auto w-full text-left whitespace-no-wrap">
+    <div class="lg:w-1/2 w-full mx-auto overflow-auto">
+      <table class="min-w-max w-full table-auto text-left">
         <thead>
-          <tr>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Name</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Lead Count</th>
-            <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+          <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <th class="py-3 px-6 text-left">
+              Name</th>
+            <th class="py-3 px-6 text-center">Lead Count
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <tr> 
-                <td class="px-4 py-3">Unassigned</td>
-                <td class="px-4 py-3">{{ unassigned_lead_count }}</td>
-          </tr>
+        <tbody class="text-gray-600 text-sm font-light">
           {% for category in category_list %}
-          <tr> 
-                <td class="px-4 py-3">
-                <a href="{% url 'leads:category-detail' category.pk %}">{{ category.name }}</td></a>
-                <td class="px-4 py-3">TODO count</td>
+          <tr class="border-b border-gray-200 hover:bg-gray-100">
+            <td class="py-3 px-6 text-left whitespace-nowrap"><a class="hover:text-purple-500 hover:scale-110"
+                href="{% url 'leads:category-detail' category.pk %}">{{ category.name }}
+            </td></a>
+            {% if category.name == 'New' %}
+            <td class="py-3 px-6 text-center whitespace-nowrap"> {{ new }} </td>
+            {% elif category.name == 'Unassigned' %}
+            <td class="py-3 px-6 text-center whitespace-nowrap"> {{ unassigned }} </td>
+            {% elif category.name == 'Contacted' %}
+            <td class="py-3 px-6 text-center whitespace-nowrap"> {{ contacted }} </td>
+            {% elif category.name == 'Converted' %}
+            <td class="py-3 px-6 text-center whitespace-nowrap"> {{ converted }} </td>
+            {% else %}
+            <td class="py-3 px-6 text-center whitespace-nowrap"> {{ unconverted }} </td>
           </tr>
+          {% endif %}
           {% endfor %}
         </tbody>
       </table>

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="text-gray-600 body-font">
+    <div class="container px-5 py-24 mx-auto">
+        <div class="flex flex-col text-center w-full mb-10">
+            <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Categories</h1>
+            <p class="lg:w-1/2 mx-auto leading-relaxed text-base">These categories segment the leads</p>
+        </div>
+        <div class="lg:w-1/2 w-full mx-auto overflow-auto">
+            <table class="min-w-max w-full table-auto text-left">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">
+                            Name</th>
+                        <th class="py-3 px-6 text-center">Lead Count
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm font-light">
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left whitespace-nowrap"><a
+                                class="hover:text-purple-500 hover:scale-110"
+                                href="{% url 'leads:category-detail' category_list.pk %}">New
+                        </td></a>
+                        <td class="py-3 px-6 text-center whitespace-nowrap">{{ new }}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left whitespace-nowrap"><a
+                                class="hover:text-purple-500 hover:scale-110"
+                                href="{% url 'leads:category-detail' category_list.pk %}">Unassigned
+                        </td></a>
+                        <td class="py-3 px-6 text-center whitespace-nowrap">{{ unassigned }}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left whitespace-nowrap"><a
+                                class="hover:text-purple-500 hover:scale-110"
+                                href="{% url 'leads:category-detail' category_list.pk %}">Contacted
+                        </td></a>
+                        <td class="py-3 px-6 text-center whitespace-nowrap">{{ contacted }}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left whitespace-nowrap"><a
+                                class="hover:text-purple-500 hover:scale-110"
+                                href="{% url 'leads:category-detail' category_list.pk %}">Converted
+                        </td></a>
+                        <td class="py-3 px-6 text-center whitespace-nowrap">{{ converted }}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left whitespace-nowrap"><a
+                                class="hover:text-purple-500 hover:scale-110"
+                                href="{% url 'leads:category-detail' category_list.pk %}">Unconverted
+                        </td></a>
+                        <td class="py-3 px-6 text-center whitespace-nowrap">{{ unconverted }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+
+{% endblock content %}

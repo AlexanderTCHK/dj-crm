@@ -8,7 +8,6 @@ from django.views import generic
 from agents.mixins import OrganizerLoginRequiredMixin
 
 
-
 class SignupView(generic.CreateView):
     template_name = "registration/signup.html"
     form_class = CustomUserCreationForm 
@@ -52,6 +51,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             )
         return context
 
+
 def lead_list(request):
     leads = Lead.objects.all()
     context = {
@@ -86,11 +86,30 @@ def lead_detail(request, pk):
 class LeadCreateView(OrganizerLoginRequiredMixin, generic.CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadModelForm
+     
+    def get_form_kwargs(self, **kwargs):
+        print(kwargs)
+        kwargs = super().get_form_kwargs(**kwargs)
+        print(kwargs)
+        kwargs.update({
+            "request": self.request
+        })
+        print(kwargs)
+        return kwargs
 
     def get_success_url(self) -> str:
         return reverse("leads:lead-list")
-
-    def form_valid(self, form) -> HttpResponse:
+ 
+    def form_valid(self, form):
+        lead = form.save(commit=False)
+        lead.organization = self.request.user.userprofile
+        if lead.agent and (lead.category == None):
+            categoty_instanse_id = Category.objects.get(name="New", organization=lead.organization)
+            lead.category = categoty_instanse_id
+        else:
+            categoty_instanse_id = Category.objects.get(name="Unassigned", organization=lead.organization)
+            lead.category = categoty_instanse_id
+        lead.save()
         #TODO send email
         send_mail(
             subject = "A lead has been created",
@@ -117,6 +136,13 @@ def lead_create(request):
 class LeadUpdateView(OrganizerLoginRequiredMixin, generic.UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadModelForm
+    
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super().get_form_kwargs(**kwargs)
+        kwargs.update({
+            "request": self.request
+        })
+        return kwargs
 
     # initial queryset of leads for the enire organization
     def get_queryset(self):
@@ -190,14 +216,20 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
             queryset =Lead.objects.filter(
                 organization=user.userprofile,
             )
+            
         else:
             queryset = Lead.objects.filter(
                 organization=user.agent.organization
             )
+            
 
         contex.update({
-            "unassigned_lead_count": Lead.objects.filter(category__isnull=True).count()
-        }
+            "new": queryset.filter(category__name__iexact="New").count(),
+            "unassigned": queryset.filter(category__name__iexact="Unassigned").count(),
+            "contacted": queryset.filter(category__name__iexact="Contacted").count(),
+            "converted": queryset.filter(category__name__iexact="Converted").count(),
+            "unconverted": queryset.filter(category__name__iexact="Unconverted").count(),
+        }   
         )
         return contex
 
@@ -217,11 +249,12 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
 class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "leads/category_detail.html"
     contex_object_name = "category"
-
+   
     def get_queryset(self):
         user = self.request.user
+
         if user.is_organizer:
-            queryset =Category.objects.filter(
+            queryset = Category.objects.filter(
                 organization=user.userprofile,
             )
         else:
@@ -234,67 +267,27 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "leads/lead_category_update.html"
     form_class = LeadCategoryUpdateForm
 
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super().get_form_kwargs(**kwargs)
+        kwargs.update({
+            "request": self.request
+        })
+        print(kwargs)
+        return kwargs
+    
     def get_success_url(self) -> str:
-        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
+        return reverse("leads:lead-list")
 
     # initial queryset of leads for the enire organization
     def get_queryset(self):
         user = self.request.user
+        print(user)
         if user.is_organizer:
-            queryset =Lead.objects.filter(organization=user.userprofile)
+            queryset = Lead.objects.filter(organization=user.userprofile)
+            print(queryset)
         else:
             queryset = Lead.objects.filter(organization=user.agent.organization)
             # filter for the agent that is logged in
             queryset = queryset.filter(agent__user=user)
         return queryset
-
-# def lead_update(request, pk):
-#     lead = Lead.objects.get(id=pk)
-#     form = LeadForm()
-#     if request.method == "POST":
-#         print("Receiving a post request")
-#         form = LeadForm(request.POST)
-#         if form.is_valid():
-#             print("The form is valid")
-#             print(form.cleaned_data)
-#             first_name = form.cleaned_data["first_name"]
-#             last_name = form.cleaned_data["last_name"]
-#             age = form.cleaned_data["age"]
-#             lead.first_name = first_name
-#             lead.last_name = last_name
-#             lead.age = age
-#             lead.save()
-
-#             return redirect("/leads")
-#     context = {
-#         "form": form,
-#         "lead": lead
-#     }
-#     return render(request, "leads/lead_update.html", context)
-
-
-
-# def lead_create(request):
-    # form = LeadForm()
-    # if request.method == "POST":
-    #     print("Receiving a post request")
-    #     form = LeadForm(request.POST)
-    #     if form.is_valid():
-    #         print("The form is valid")
-    #         print(form.cleaned_data)
-    #         first_name = form.cleaned_data["first_name"]
-    #         last_name = form.cleaned_data["last_name"]
-    #         age = form.cleaned_data["age"]
-    #         agent = Agent.objects.first()
-    #         Lead.objects.create(
-    #             first_name = first_name,
-    #             last_name = last_name,
-    #             age = age,
-    #             agent = agent
-    #         )
-    #         print("The lead has been created")
-    #         return redirect("/leads")
-    # context = {
-    #     "form": form
-    # }
-#     return render(request, "leads/lead_create.html", context)
