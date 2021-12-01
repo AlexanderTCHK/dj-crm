@@ -50,7 +50,7 @@ class LeadCategoryUpdateForm(forms.ModelForm):
         fields = (
             'category',
         )
-
+    
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")
         user = request.user
