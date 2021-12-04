@@ -7,13 +7,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leads', '0003_rename_is_organaizer_user_is_organizer'),
+        ("leads", "0003_rename_is_organaizer_user_is_organizer"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lead',
-            name='agent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='leads.agent'),
+            model_name="lead",
+            name="agent",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="leads.agent",
+            ),
         ),
     ]

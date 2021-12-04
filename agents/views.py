@@ -8,12 +8,14 @@ from .forms import AgentModelForm
 from .mixins import OrganizerLoginRequiredMixin
 from django.core.mail import send_mail
 
+
 class AgentListView(OrganizerLoginRequiredMixin, generic.ListView):
     template_name = "agents/agent_list.html"
-    
+
     def get_queryset(self):
         request_user_organization = self.request.user.userprofile
         return Agent.objects.filter(organization=request_user_organization)
+
 
 class AgentCreateView(OrganizerLoginRequiredMixin, generic.CreateView):
     template_name = "agents/agent_create.html"
@@ -33,9 +35,10 @@ class AgentCreateView(OrganizerLoginRequiredMixin, generic.CreateView):
             subject="You are invited to be an agent",
             message="You were added as an agent on DJCRM. Please come login to start working.",
             from_email="admin@test.com",
-            recipient_list=[user.email]
+            recipient_list=[user.email],
         )
         return super(AgentCreateView, self).form_valid(form)
+
 
 class AgentDetailView(OrganizerLoginRequiredMixin, generic.DetailView):
     template_name = "agents/agent_detail.html"
@@ -44,6 +47,7 @@ class AgentDetailView(OrganizerLoginRequiredMixin, generic.DetailView):
     def get_queryset(self):
         request_user_organization = self.request.user.userprofile
         return Agent.objects.filter(organization=request_user_organization)
+
 
 class AgentUpdateView(OrganizerLoginRequiredMixin, generic.UpdateView):
     template_name = "agents/agent_update.html"
@@ -55,6 +59,7 @@ class AgentUpdateView(OrganizerLoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self):
         return reverse("agents:agent-list")
+
 
 class AgentDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
     template_name = "agents/agent_delete.html"
