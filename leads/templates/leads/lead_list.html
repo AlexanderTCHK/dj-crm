@@ -24,8 +24,7 @@
   <table class="min-w-max w-full table-auto">
     <thead>
       <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-        <th class="py-3 px-6 text-left">FIRST NAME</th>
-        <th class="py-3 px-6 text-left">LAST NAME</th>
+        <th class="py-3 px-6 text-left">NAME</th>
         <th class="py-3 px-6 text-center">AGE</th>
         <th class="py-3 px-6 text-center">EMAIL</th>
         <th class="py-3 px-6 text-center">PHONE NUMBER</th>
@@ -37,14 +36,14 @@
       {% endif %}
       {% for lead in leads|dictsort:"first_name" %}
       <tr class="border-b border-gray-200 hover:bg-gray-100">
-        <td class="py-3 px-6 text-left whitespace-nowrap">
-          <div class="flex items-center">
-            <span class="font-medium">{{ lead.first_name }}</span>
-          </div>
-        </td>
         <td class="py-3 px-6 text-left">
           <div class="flex items-center">
-            <span>{{ lead.last_name }}</span>
+            {% if lead.profile_picture %}
+            <div class="mr-2">
+              <img class="w-12 h-12 rounded-full" src={{ lead.profile_picture.url }} alt="" />
+            </div>
+            {% endif %}
+            <span class="font-medium">{{ lead.first_name }} {{ lead.last_name }}</span>
           </div>
         </td>
         <td class="py-3 px-6 text-center">
@@ -131,8 +130,7 @@
   <table class="min-w-max w-full table-auto">
     <thead>
       <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-        <th class="py-3 px-6 text-left">FIRST NAME</th>
-        <th class="py-3 px-6 text-left">LAST NAME</th>
+        <th class="py-3 px-6 text-left">NAME</th>
         <th class="py-3 px-6 text-center">AGE</th>
         <th class="py-3 px-6 text-center">EMAIL</th>
         <th class="py-3 px-6 text-center">PHONE NUMBER</th>
@@ -143,14 +141,12 @@
     <tbody class="text-gray-600 text-sm font-light">
       {% for lead in unassigned_leads %}
       <tr class="border-b border-gray-200 hover:bg-gray-100">
-        <td class="py-3 px-6 text-left whitespace-nowrap">
-          <div class="flex items-center">
-            <span class="font-medium">{{ lead.first_name }}</span>
-          </div>
-        </td>
         <td class="py-3 px-6 text-left">
           <div class="flex items-center">
-            <span>{{ lead.last_name }}</span>
+            <div class="mr-2">
+              <img class="w-12 h-12 rounded-full" src={{ lead.profile_picture.url }} alt="" />
+            </div>
+            <span class="font-medium">{{ lead.first_name }} {{ lead.last_name }}</span>
           </div>
         </td>
         <td class="py-3 px-6 text-center">

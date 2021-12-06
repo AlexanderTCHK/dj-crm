@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -53,14 +54,6 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-def lead_list(request):
-    leads = Lead.objects.all()
-    context = {
-        "leads": leads,
-    }
-    return render(request, "leads/lead_list.html", context)
-
-
 class LeadDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "leads/lead_detail.html"
     context_object_name = "lead"
@@ -77,23 +70,13 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
         return queryset
 
 
-def lead_detail(request, pk):
-    lead = Lead.objects.get(id=pk)
-    context = {"lead": lead}
-
-    return render(request, "leads/lead_detail.html", context)
-
-
 class LeadCreateView(OrganizerLoginRequiredMixin, generic.CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadModelForm
 
     def get_form_kwargs(self, **kwargs):
-        print(kwargs)
         kwargs = super().get_form_kwargs(**kwargs)
-        print(kwargs)
         kwargs.update({"request": self.request})
-        print(kwargs)
         return kwargs
 
     def get_success_url(self) -> str:
@@ -113,20 +96,21 @@ class LeadCreateView(OrganizerLoginRequiredMixin, generic.CreateView):
             )
             lead.category = categoty_instanse_id
         lead.save()
-        # TODO send email
+
+        
         send_mail(
             subject="A lead has been created",
             message="Go to the site to see a new lead",
             from_email="test@test.com",
             recipient_list=["test2@test.com"],
         )
+        messages.success(self.request, "You have successfully created a lead!")
         return super(LeadCreateView, self).form_valid(form)
 
 
 def lead_create(request):
     form = LeadModelForm()
     if request.method == "POST":
-        print("Receiving a post request")
         form = LeadModelForm(request.POST)
         if form.is_valid():
             form.save()
@@ -274,7 +258,6 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_form_kwargs(self, **kwargs):
         kwargs = super().get_form_kwargs(**kwargs)
         kwargs.update({"request": self.request})
-        print(kwargs)
         return kwargs
 
     def get_success_url(self) -> str:
@@ -283,9 +266,10 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     # initial queryset of leads for the enire organization
     def get_queryset(self):
         user = self.request.user
-        print(user)
         if user.is_organizer:
+            queryset1 = Lead.objects.all()
             queryset = Lead.objects.filter(organization=user.userprofile)
+            print(queryset1)
             print(queryset)
         else:
             queryset = Lead.objects.filter(organization=user.agent.organization)

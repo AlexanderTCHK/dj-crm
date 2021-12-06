@@ -17,6 +17,7 @@ class LeadModelForm(forms.ModelForm):
             "description",
             "phone_number",
             "email",
+            "profile_picture",
         )
 
     def __init__(self, *args, **kwargs):
@@ -52,7 +53,7 @@ class AssignAgentForm(forms.Form):
 class LeadCategoryUpdateForm(forms.ModelForm):
     class Meta:
         model = Lead
-        fields = ("category",)
+        fields = ("category", "organization")
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")

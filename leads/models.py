@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     is_organizer = models.BooleanField(default=True)
     is_agent = models.BooleanField(default=False)
+    user_picture = models.ImageField(upload_to='agent_picture/', default='agent_picture/unknown-person-profile.jpg')
 
 
 class UserProfile(models.Model):
@@ -32,6 +33,7 @@ class Lead(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     phone_number = models.CharField(max_length=20)
     email = models.EmailField()
+    profile_picture = models.ImageField(upload_to='profile_picture/', default='profile_picture/unknown-person-profile.jpg')
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
@@ -41,6 +43,7 @@ class Agent(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     description = models.TextField()
+    
 
     def __str__(self):
         return self.user.email

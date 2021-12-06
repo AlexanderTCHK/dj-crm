@@ -4,10 +4,16 @@
   <div class="container px-5 py-24 mx-auto">
     <div class="lg:w-1/2 mx-auto flex flex-wrap">
       <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
-        <h2 class="text-4xl text-gray-800">Lead</h2>
-        <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">
-          {{ lead.first_name }} {{ lead.last_name }}
-        </h1>
+        <div class="w-full flex items-center justify-between space-x-8">
+          <div class="flex-1 truncate">
+            <div class="flex items-center space-x-3">
+              <h3 class="text-3xl text-gray-800 font-medium truncate">{{ lead.first_name }} {{ lead.last_name }}
+              </h3>
+            </div>
+            <p class="mt-1 mb-3 text-xl text-gray-500 truncate">{{ lead.description }}</p>
+          </div>
+          <img class="inline object-cover w-16 h-16 mr-2 rounded-full" src="{{ lead.profile_picture.url }}" alt="">
+        </div>
         <div class="flex mb-4">
           <a href="{% url 'leads:lead-detail' lead.pk %}"
             class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Overview</a>
@@ -22,7 +28,7 @@
               px-1
             ">Update Details</a>
         </div>
-        <form method="POST" action="">
+        <form method="POST" enctype="multipart/form-data">
           {% csrf_token %} {{ form|crispy }}
           <button
             class="w-full text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg"

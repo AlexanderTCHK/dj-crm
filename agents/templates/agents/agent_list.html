@@ -22,8 +22,7 @@
   <table class="min-w-max w-full table-auto">
     <thead>
       <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-        <th class="py-3 px-6 text-left">FIRST NAME</th>
-        <th class="py-3 px-6 text-left">LAST NAME</th>
+        <th class="py-3 px-6 text-left">NAME</th>
         <th class="py-3 px-6 text-center">EMAIL</th>
         <th class="py-3 px-6 text-center">ACTIONS</th>
       </tr>
@@ -32,14 +31,12 @@
 
       {% for agent in object_list %}
       <tr class="border-b border-gray-200 hover:bg-gray-100">
-        <td class="py-3 px-6 text-left whitespace-nowrap">
-          <div class="flex items-center">
-            <span class="font-medium">{{ agent.user.first_name }}</span>
-          </div>
-        </td>
         <td class="py-3 px-6 text-left">
           <div class="flex items-center">
-            <span>{{ agent.user.last_name }}</span>
+            <div class="mr-2">
+              <img class="w-12 h-12 rounded-full" src={{  agent.user.user_picture.url }} alt="" />
+            </div>
+            <span class="font-medium">{{ agent.user.first_name }} {{ agent.user.last_name }}</span>
           </div>
         </td>
         <td class="py-3 px-6 text-center">
