@@ -38,6 +38,15 @@ class Lead(models.Model):
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
+def handle_upload_followups(instance, filename):
+    return f"lead_followups/lead_{instance.lead.pk}/{filename}"
+
+class FollowUp(models.Model):
+    lead = models.ForeignKey(Lead, related_name="followups", on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True, null=True)
+    file = models.FileField(null=True, blank=True, upload_to=handle_upload_followups)
+
 
 class Agent(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

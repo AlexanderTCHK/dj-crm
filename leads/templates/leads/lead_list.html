@@ -38,12 +38,11 @@
       <tr class="border-b border-gray-200 hover:bg-gray-100">
         <td class="py-3 px-6 text-left">
           <div class="flex items-center">
-            {% if lead.profile_picture %}
             <div class="mr-2">
               <img class="w-12 h-12 rounded-full" src={{ lead.profile_picture.url }} alt="" />
             </div>
-            {% endif %}
-            <span class="font-medium">{{ lead.first_name }} {{ lead.last_name }}</span>
+            <a class="text-blue-500 hover:text-blue-800" href="{% url 'leads:lead-detail' lead.pk %}">
+              <span class="font-medium">{{ lead.first_name }} {{ lead.last_name }}</span></a>
           </div>
         </td>
         <td class="py-3 px-6 text-center">
@@ -146,7 +145,8 @@
             <div class="mr-2">
               <img class="w-12 h-12 rounded-full" src={{ lead.profile_picture.url }} alt="" />
             </div>
-            <span class="font-medium">{{ lead.first_name }} {{ lead.last_name }}</span>
+            <a class="text-blue-500 hover:text-blue-800" href="{% url 'leads:lead-detail' lead.pk %}"><span
+                class="font-medium">{{ lead.first_name }} {{ lead.last_name }}</span></a>
           </div>
         </td>
         <td class="py-3 px-6 text-center">

@@ -3,12 +3,13 @@ from django.core.mail import send_mail
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from .models import Lead, Category
+from .models import Lead, Category, FollowUp
 from .forms import (
     LeadModelForm,
     CustomUserCreationForm,
     AssignAgentForm,
     LeadCategoryUpdateForm,
+    FollowUpModelForm
 )
 from django.views import generic
 from agents.mixins import OrganizerLoginRequiredMixin
@@ -151,8 +152,6 @@ def lead_update(request, pk):
 
 class LeadDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
     template_name = "leads/lead_delete.html"
-    form_class = LeadModelForm
-    queryset = Lead.objects.all()
 
     def get_success_url(self) -> str:
         return reverse("leads:lead-list")
@@ -161,11 +160,6 @@ class LeadDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
     def get_queryset(self):
         user = self.request.user
         return Lead.objects.filter(organization=user.userprofile)
-
-
-def lead_delete(request, pk):
-    lead = Lead.objects.get(id=pk)
-    lead.delete()
 
 
 class AssignAgentView(OrganizerLoginRequiredMixin, generic.FormView):
@@ -267,12 +261,72 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_queryset(self):
         user = self.request.user
         if user.is_organizer:
-            queryset1 = Lead.objects.all()
             queryset = Lead.objects.filter(organization=user.userprofile)
-            print(queryset1)
-            print(queryset)
         else:
             queryset = Lead.objects.filter(organization=user.agent.organization)
             # filter for the agent that is logged in
             queryset = queryset.filter(agent__user=user)
         return queryset
+
+
+class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
+    template_name = "leads/followup_create.html"
+    form_class = FollowUpModelForm
+
+    def get_success_url(self) -> str:
+        print(self.kwargs["pk"])
+        return reverse("leads:lead-detail", kwargs={"pk": self.kwargs["pk"]})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "lead": Lead.objects.get(pk=self.kwargs["pk"])
+        })
+        return context
+    
+    def form_valid(self, form):
+        lead = Lead.objects.get(pk=self.kwargs["pk"])
+        followup = form.save(commit=False)
+        followup.lead = lead
+        followup.save()
+        return super().form_valid(form)
+
+
+class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
+    template_name = "leads/lead_followup_update.html"
+    form_class = FollowUpModelForm
+
+    def get_success_url(self) -> str:
+        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().lead.id})
+
+    # initial queryset of leads for the enire organization
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+
+            queryset = FollowUp.objects.filter(lead__organization=user.userprofile)
+        else:
+            queryset = FollowUp.objects.filter(lead__organization=user.agent.organization)
+            # filter for the agent that is logged in
+            queryset = queryset.filter(lead__agent__user=user)
+        return queryset
+
+
+class FollowUpDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
+    template_name = "leads/followup_delete.html"
+
+    def get_success_url(self) -> str:
+        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().lead.id})
+
+    # initial queryset of leads for the enire organization
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+
+            queryset = FollowUp.objects.filter(lead__organization=user.userprofile)
+        else:
+            queryset = FollowUp.objects.filter(lead__organization=user.agent.organization)
+            # filter for the agent that is logged in
+            queryset = queryset.filter(lead__agent__user=user)
+        return queryset
+
