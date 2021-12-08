@@ -26,6 +26,15 @@ class SignupView(generic.CreateView):
 class LandingPageView(generic.TemplateView):
     template_name = "landing.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("dashboard")
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DashboardView(OrganizerLoginRequiredMixin, generic.TemplateView):
+    template_name = "dashboard.html"
+
 
 class LeadListView(LoginRequiredMixin, generic.ListView):
     template_name = "leads/lead_list.html"

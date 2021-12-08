@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from leads.views import LandingPageView, SignupView
+from leads.views import LandingPageView, SignupView, DashboardView
 from django.views.generic.base import RedirectView
 from django.contrib.auth.views import (
     LoginView,
@@ -36,6 +36,7 @@ urlpatterns = [
         RedirectView.as_view(url=staticfiles_storage.url("favicon.ico")),
     ),
     path("", LandingPageView.as_view(), name="landing-page"),
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("leads/", include("leads.urls", namespace="leads")),
     path("agents/", include("agents.urls", namespace="agents")),
     path("signup", SignupView.as_view(), name="signup"),
