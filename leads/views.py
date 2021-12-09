@@ -1,4 +1,6 @@
 from django.contrib import messages
+import datetime
+from django.utils import timezone
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -35,32 +37,72 @@ class LandingPageView(generic.TemplateView):
 class DashboardView(OrganizerLoginRequiredMixin, generic.TemplateView):
     template_name = "dashboard.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        # How many leads we have in total
+        total_lead_count = Lead.objects.filter(organization=user.userprofile).count()
+
+        # How many new leads in the last 30 days
+        thirty_days_ago = timezone.now() - datetime.timedelta(days=30)
+        total_in_past30 = Lead.objects.filter(
+                    organization=user.userprofile, 
+                    date_added__gte=thirty_days_ago).count()
+                    
+        # How many converted leads in the last 30 days
+        converted_category = Category.objects.get(organization=user.userprofile, name="Converted")
+        print(converted_category)
+        converted_in_last30 = Lead.objects.filter(
+                    organization=user.userprofile, 
+                    category=converted_category,
+                    converted_date__gte=thirty_days_ago).count()
+        print(converted_in_last30)
+
+        context.update({
+                "total_lead_count": total_lead_count,
+                "total_in_past30": total_in_past30,
+                "converted_in_last30": converted_in_last30,
+        })
+        return context
 
 class LeadListView(LoginRequiredMixin, generic.ListView):
     template_name = "leads/lead_list.html"
     context_object_name = "leads"
-
+    
     # initial queryset of leads for the enire organization
     def get_queryset(self):
         user = self.request.user
         if user.is_organizer:
             queryset = Lead.objects.filter(
                 organization=user.userprofile, agent__isnull=False
+
+            )
+            queryset = Lead.objects.exclude(
+                category__name="Unassigned"
+                
             )
         else:
             queryset = Lead.objects.filter(organization=user.agent.organization)
             # filter for the agent that is logged in
             queryset = queryset.filter(agent__user=user)
+            # queryset = queryset.exclude(agent__user=user)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         if user.is_organizer:
-            queryset = Lead.objects.filter(
-                organization=user.userprofile, agent__isnull=True
+            unassigned_leads = Lead.objects.filter(
+                category=Category.objects.get(organization=user.userprofile, name="Unassigned")
             )
-            context.update({"unassigned_leads": queryset})
+            new_leads = Lead.objects.filter(
+                category=Category.objects.get(organization=user.userprofile, name="New")
+            )
+            context.update({
+                "unassigned_leads": unassigned_leads,
+                "new_leads": new_leads,
+                })
         return context
 
 
@@ -118,17 +160,6 @@ class LeadCreateView(OrganizerLoginRequiredMixin, generic.CreateView):
         return super(LeadCreateView, self).form_valid(form)
 
 
-def lead_create(request):
-    form = LeadModelForm()
-    if request.method == "POST":
-        form = LeadModelForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("/leads")
-    context = {"form": form}
-    return render(request, "leads/lead_create.html", context)
-
-
 class LeadUpdateView(OrganizerLoginRequiredMixin, generic.UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadModelForm
@@ -145,18 +176,6 @@ class LeadUpdateView(OrganizerLoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self) -> str:
         return reverse("leads:lead-list")
-
-
-def lead_update(request, pk):
-    lead = Lead.objects.get(id=pk)
-    form = LeadModelForm(instance=lead)
-    if request.method == "POST":
-        form = LeadModelForm(request.POST, instance=lead)
-        if form.is_valid():
-            form.save()
-            return redirect("/leads")
-    context = {"lead": lead, "form": form}
-    return render(request, "leads/lead_update.html", context)
 
 
 class LeadDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
@@ -185,8 +204,10 @@ class AssignAgentView(OrganizerLoginRequiredMixin, generic.FormView):
 
     def form_valid(self, form):
         agent = form.cleaned_data["agent"]
+        user = self.request.user
         lead = Lead.objects.get(id=self.kwargs["pk"])
         lead.agent = agent
+        lead.category = Category.objects.get(organization=user.userprofile, name="New")
         lead.save()
         return super().form_valid(form)
 
@@ -257,6 +278,7 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
 class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "leads/lead_category_update.html"
     form_class = LeadCategoryUpdateForm
+    model = Lead
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super().get_form_kwargs(**kwargs)
@@ -266,17 +288,18 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_success_url(self) -> str:
         return reverse("leads:lead-list")
 
-    # initial queryset of leads for the enire organization
-    def get_queryset(self):
+    def form_valid(self, form):
         user = self.request.user
-        if user.is_organizer:
-            queryset = Lead.objects.filter(organization=user.userprofile)
-        else:
-            queryset = Lead.objects.filter(organization=user.agent.organization)
-            # filter for the agent that is logged in
-            queryset = queryset.filter(agent__user=user)
-        return queryset
-
+        lead_befor_update = self.get_object()
+        instance = form.save(commit=False)
+        converted_category = Category.objects.get(organization=user.userprofile, name="Converted")
+        if form.cleaned_data["category"] == converted_category:
+            # update the date at which this lead was converted
+            if lead_befor_update.category != converted_category:
+                # this lead has now been converted
+                instance.converted_date = timezone.now()
+        instance.save()
+        return super().form_valid(form)
 
 class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "leads/followup_create.html"

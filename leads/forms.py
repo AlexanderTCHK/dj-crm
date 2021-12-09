@@ -1,7 +1,8 @@
 from django import forms
-from .models import Lead, Agent, FollowUp
+from .models import Category, Lead, Agent, FollowUp
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
+
 
 User = get_user_model()
 
@@ -53,23 +54,15 @@ class AssignAgentForm(forms.Form):
 class LeadCategoryUpdateForm(forms.ModelForm):
     class Meta:
         model = Lead
-        fields = ("category", "organization")
+        fields = ("category",)
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")
         user = request.user
-
-        if user.is_organizer:
-            queryset = Lead.objects.filter(organization=user.userprofile)
-
-        else:
-            queryset = Lead.objects.filter(organization=user.agent.organization)
-            # filter for the agent that is logged in
-            queryset = queryset.filter(agent__user=user)
-
+        queryset = Category.objects.filter(organization=user.userprofile)
         super().__init__(*args, **kwargs)
         self.fields["category"].queryset = queryset
-
+        
 
 class FollowUpModelForm(forms.ModelForm):
     class Meta:
