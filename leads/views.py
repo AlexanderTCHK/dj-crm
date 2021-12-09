@@ -86,7 +86,10 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             queryset = Lead.objects.filter(organization=user.agent.organization)
             # filter for the agent that is logged in
             queryset = queryset.filter(agent__user=user)
-            # queryset = queryset.exclude(agent__user=user)
+            queryset = Lead.objects.exclude(
+                category__name="Unassigned"
+                
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
