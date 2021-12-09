@@ -293,6 +293,8 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
 
     def form_valid(self, form):
         user = self.request.user
+
+        # Assign converted_date field in Lead model
         lead_befor_update = self.get_object()
         instance = form.save(commit=False)
         converted_category = Category.objects.get(organization=user.userprofile, name="Converted")
@@ -301,6 +303,12 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             if lead_befor_update.category != converted_category:
                 # this lead has now been converted
                 instance.converted_date = timezone.now()
+        
+        # Assign category field in Lead model
+        unassigned_category = Category.objects.get(organization=user.userprofile, name="Unassigned")
+        if form.cleaned_data["category"] == unassigned_category:
+            instance.category = Category.objects.get(organization=user.userprofile, name="Unassigned")
+        
         instance.save()
         return super().form_valid(form)
 
