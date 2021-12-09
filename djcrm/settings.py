@@ -183,3 +183,10 @@ if not DEBUG:
     X_FRAME_OPTIONS = "DENY"
 
     ALLOWED_HOSTS = ["*"]
+
+    # EMAIL_HOST = "smtp.mailgun.org"
+    # EMAIL_HOST_USER = 
+    # EMAIL_HOST_PASSWORD = 
+    # EMAIL_USE_TLS = True
+    # EMAIL_PORT = 587
+    # DEFAULT_FROM_EMAIL = 'djcrm@django-djcrm.com'
