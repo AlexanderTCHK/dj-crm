@@ -184,9 +184,9 @@ if not DEBUG:
 
     ALLOWED_HOSTS = ["*"]
 
-    # EMAIL_HOST = "smtp.mailgun.org"
-    # EMAIL_HOST_USER = 
-    # EMAIL_HOST_PASSWORD = 
-    # EMAIL_USE_TLS = True
-    # EMAIL_PORT = 587
-    # DEFAULT_FROM_EMAIL = 'djcrm@django-djcrm.com'
+    EMAIL_HOST = env("EMAIL_HOST")
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+    EMAIL_PORT = env("EMAIL_PORT")
+    DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
