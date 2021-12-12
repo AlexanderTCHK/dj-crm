@@ -131,3 +131,4 @@ dmypy.json
 static_root
 media_root
 temp_pictures
+.temp.*

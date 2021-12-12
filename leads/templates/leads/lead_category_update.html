@@ -28,8 +28,10 @@
               text-lg
               px-1
             ">Category</a>
+          {% if request.user.is_organizer %}
           <a href="{% url 'leads:lead-update' lead.pk %}"
             class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">Update Details</a>
+          {% endif %}
         </div>
         <form method="POST" action="">
           {% csrf_token %} {{ form|crispy}}

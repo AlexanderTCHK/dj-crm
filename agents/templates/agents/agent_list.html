@@ -36,7 +36,7 @@
             <div class="mr-2">
               <img class="w-12 h-12 rounded-full" src={{  agent.user.user_picture.url }} alt="" />
             </div>
-            <a class="text-blue-500 hover:text-blue-800" href="{% url 'leads:lead-detail' lead.pk %}">
+            <a class="text-blue-500 hover:text-blue-800" href="{% url 'agents:agent-detail' agent.pk %}">
               <span class="font-medium">{{ agent.user.first_name }} {{ agent.user.last_name }}</span></a>
           </div>
         </td>

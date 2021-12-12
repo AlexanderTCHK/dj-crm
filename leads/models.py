@@ -23,17 +23,18 @@ class Lead(models.Model):
     organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
     category = models.ForeignKey(
-        "Category",
-        related_name="leads",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-    )
+                                "Category",
+                                related_name="leads",
+                                null=True,
+                                blank=True,
+                                on_delete=models.SET_NULL,
+                                )
     description = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
     phone_number = models.CharField(max_length=20)
     email = models.EmailField()
     profile_picture = models.ImageField(upload_to='profile_picture/', default='profile_picture/unknown-person-profile.jpg')
+    converted_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
