@@ -317,7 +317,6 @@ class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
     form_class = FollowUpModelForm
 
     def get_success_url(self) -> str:
-        print(self.kwargs["pk"])
         return reverse("leads:lead-detail", kwargs={"pk": self.kwargs["pk"]})
 
     def get_context_data(self, **kwargs):

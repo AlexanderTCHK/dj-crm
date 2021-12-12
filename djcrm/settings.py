@@ -23,7 +23,7 @@ if READ_DOT_ENV_FILE:
     environ.Env.read_env()
 
 # Take environment variables from .env file
-# environ.Env.read_env()
+environ.Env.read_env()
 
 # False if not in os.environ because of casting above
 DEBUG = env('DEBUG')
@@ -37,7 +37,7 @@ SECRET_KEY = env('SECRET_KEY')
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     # Third party apps
     'crispy_forms',
     'crispy_tailwind',
+    'tailwind',
+    'theme',
 
     # Local apps
     'leads.apps.LeadsConfig',
@@ -171,3 +173,8 @@ LOGOUT_REDIRECT_URL = '/'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 
 CRISPY_TEMPLATE_PACK = "tailwind"
+
+TAILWIND_APP_NAME = 'theme'
+
+NPM_BIN_PATH = Path(r"C:\Program Files\nodejs\npm.cmd")
+
