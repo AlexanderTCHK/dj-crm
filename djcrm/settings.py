@@ -147,7 +147,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media_root'
 STATIC_ROOT = 'static_root'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'leads.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -170,6 +170,7 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 TAILWIND_APP_NAME = 'theme'
 
 NPM_BIN_PATH = Path(r"C:\Program Files\nodejs\npm.cmd")
+
 
 if not DEBUG:
     LOGGING = {
@@ -222,7 +223,7 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = "DENY"
 
-    ALLOWED_HOSTS = ["dj-crm-7phyw.ondigitalocean.app"]
+    ALLOWED_HOSTS = ['*']
     
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = env('EMAIL_HOST')
