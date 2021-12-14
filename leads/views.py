@@ -66,6 +66,7 @@ class DashboardView(OrganizerLoginRequiredMixin, generic.TemplateView):
         })
         return context
 
+
 class LeadListView(LoginRequiredMixin, generic.ListView):
     template_name = "leads/lead_list.html"
     context_object_name = "leads"
@@ -78,7 +79,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                 organization=user.userprofile, agent__isnull=False
 
             )
-            queryset = Lead.objects.exclude(
+            queryset = queryset.exclude(
                 category__name="Unassigned"
                 
             )
@@ -179,6 +180,11 @@ class LeadUpdateView(OrganizerLoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self) -> str:
         return reverse("leads:lead-list")
+
+    def form_valid(self, form):
+        form.save()
+        messages.info(self.request, "You have successfully updated a lead")
+        return super().form_valid(form)
 
 
 class LeadDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
@@ -310,7 +316,9 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             instance.category = Category.objects.get(organization=user.userprofile, name="Unassigned")
         
         instance.save()
+        messages.info(self.request, "You have successfully updated a category!")
         return super().form_valid(form)
+
 
 class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "leads/followup_create.html"

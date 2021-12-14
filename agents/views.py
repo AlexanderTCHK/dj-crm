@@ -1,5 +1,5 @@
 import random
-
+from django.contrib import messages
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import reverse
@@ -37,7 +37,8 @@ class AgentCreateView(OrganizerLoginRequiredMixin, generic.CreateView):
             from_email="admin@test.com",
             recipient_list=[user.email],
         )
-        return super(AgentCreateView, self).form_valid(form)
+        messages.success(self.request, "You have successfully created an agent!")
+        return super().form_valid(form)
 
 
 class AgentDetailView(OrganizerLoginRequiredMixin, generic.DetailView):
@@ -59,6 +60,11 @@ class AgentUpdateView(OrganizerLoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self):
         return reverse("agents:agent-list")
+    
+    def form_valid(self, form):
+        form.save()
+        messages.info(self.request, "You have successfully updated an agent!")
+        return super().form_valid(form)
 
 
 class AgentDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
@@ -71,3 +77,5 @@ class AgentDeleteView(OrganizerLoginRequiredMixin, generic.DeleteView):
 
     def get_success_url(self):
         return reverse("agents:agent-list")
+
+        

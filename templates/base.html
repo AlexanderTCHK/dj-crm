@@ -14,19 +14,12 @@
 
 <body>
   <div class="max-w-7xl mx-auto">
-    {% if messages %}
-    <ul class="messages">
-      {% for message in messages %}
-      <li{% if message.tags %} class="{% if message.tags == 'success'
-       %}" {% endif %}>
-        <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
-          <p class="font-bold">{{ message }}</p>
-        </div>
-        </li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% include 'navbar.html' %} {% block content %} {% endblock content %} </div> {% include "scripts.html" %}
+    {% include 'navbar.html' %}
+    {% include 'messages.html' %}
+    {% block content %}
+    {% endblock content %}
+  </div>
+  {% include "scripts.html" %}
 </body>
 
 </html>
